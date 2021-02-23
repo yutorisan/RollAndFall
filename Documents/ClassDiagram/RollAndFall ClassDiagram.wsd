@@ -1,0 +1,139 @@
+@startuml RollAndFall
+
+
+namespace System{
+    namespace Score{
+        interface IObservableScore{
+            +IObservable<int> Score { get; }
+        }
+        interface IScoreAddable{
+            +void Add(int score);
+        }
+        class ScoreInventory
+        IObservableScore <|.. ScoreInventory
+        ScoreInventory ..|> IScoreAddable
+    }
+    namespace Time{
+        interface IObservableTimeLimit{
+            +IObservable<int> Seconds { get; }
+        }
+        interface ITimeAddable{
+            +void Add(int sec);
+        }
+        class TimeInventory
+        IObservableTimeLimit <|.. TimeInventory
+        TimeInventory ..|> ITimeAddable
+    }
+}
+
+'コース上のアイテム
+namespace Item{
+    interface IItem
+    abstract ItemBase
+    IItem <|.. ItemBase
+
+    class TimeExtendItem
+    class GoldItem
+
+    ItemBase <|-- TimeExtendItem
+    ItemBase <|-- GoldItem
+    
+    class ItemUtilizer
+
+    System.Score.IScoreAddable <-- ItemUtilizer
+    System.Time.ITimeAddable <-- ItemUtilizer
+}
+
+namespace Player{
+    Player --> Input.IGameCommandProvider
+
+    interface IObservableGetItem{
+        +IObservable<IItem> GettedItem { get; }
+    }
+    class ItemCollisionDetector
+    IObservableGetItem <|.. ItemCollisionDetector
+    ItemCollisionDetector --> Item.IItem
+
+    Item.ItemUtilizer --> IObservableGetItem
+}
+
+namespace Course{
+    class Course
+
+    namespace Generate{
+        class CourseGenerator
+        CourseGenerator - Course.Course
+    }
+
+    'コースの回転
+    CourseRotator --> Input.IGameCommandProvider
+
+    '落下時を検知
+    class FallDetector
+    interface IObservableFalled
+    IObservableFalled <|.. FallDetector
+
+    interface IObservableCourseSwitched
+    class CourseSwitcher
+    IObservableCourseSwitched <|.. CourseSwitcher
+    CourseSwitcher --> IObservableFalled
+
+    'コース上のアイテムの状態を監視する
+    interface IObservableCourseItemCompleted
+    class CourseItemObserver
+    interface ICourseItemObservable
+    ICourseItemObservable <|.. Course
+    CourseItemObserver --> ICourseItemObservable
+    IObservableCourseItemCompleted <|.. CourseItemObserver
+
+    class CourseManager
+
+    'コースの自動生成
+    interface ICourseGenerator{
+        +Course Generate(int n);
+    }
+    CourseManager --> ICourseGenerator
+    CourseManager --> IObservableCourseItemCompleted
+    CourseManager --> IObservableCourseSwitched
+
+    System.Score.IScoreAddable <-- CourseManager
+
+    ICourseGenerator <|.. Course.Generate.CourseGenerator
+
+}
+
+
+
+
+namespace Input{
+    enum GameCommand{
+        RotateLeft,
+        RotateRight,
+        PlayerJump
+    }
+    interface IGameCommandProvider{
+        +IObservable<GameCommand> {get;}
+    }
+    IGameCommandProvider <|.. GameCommandFormatter
+
+    interface IInputProvider
+    class Input <<static>>
+    IInputProvider <|.. UserInputProvider
+    UserInputProvider --> Input
+
+    GameCommandFormatter --> IInputProvider
+}
+
+
+namespace View{
+    class ScoreView <<View>>
+    class TimeView <<View>>
+
+    ScoreView --> System.Score.IObservableScore
+    TimeView --> System.Time.IObservableTimeLimit
+}
+
+
+
+
+@enduml
