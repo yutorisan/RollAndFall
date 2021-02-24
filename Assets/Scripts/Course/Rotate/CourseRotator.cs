@@ -17,9 +17,9 @@ namespace RAF.Course.Rotate
             m_rigidbody = GetComponent<Rigidbody2D>();
 
             GameCommandFormatter.Instance.GameCommandInputted(GameCommand.RotateLeft)
-                                .Subscribe(_ => m_rigidbody.MoveRotation(++m_rotation));
+                                .Subscribe(_ => transform.Rotate(new Vector3(0, 0, .1f)));
             GameCommandFormatter.Instance.GameCommandInputted(GameCommand.RotateRigth)
-                                .Subscribe(_ => m_rigidbody.MoveRotation(--m_rotation));
+                                .Subscribe(_ => transform.Rotate(new Vector3(0, 0, -.1f)));
         }
     }
 }
