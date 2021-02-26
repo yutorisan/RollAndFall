@@ -49,25 +49,6 @@ namespace RAF.Course
         [SerializeField]
         private int m_num;
 
-        /// <summary>
-        /// n角形の外角の大きさを取得する
-        /// </summary>
-        /// <param name="n"></param>
-        /// <returns></returns>
-        private static Angle GetOuterAngle(int n) => Angle.Round / n;
-        /// <summary>
-        /// n角形の内角の大きさを取得する
-        /// </summary>
-        /// <param name="n"></param>
-        /// <returns></returns>
-        private static Angle GetInnerAngle(int n) => Angle.FromDegree(180f * (n - 2) / n);
-        /// <summary>
-        /// 1辺の長さを取得する
-        /// </summary>
-        /// <param name="n"></param>
-        /// <param name="radius">頂点から重心までの距離</param>
-        /// <returns></returns>
-        private static float GetOneSideLength(int n, float radius) => 2 * radius * (GetInnerAngle(n) / 2).Cos;
 
         private IReadOnlyDictionary<CoursePart, GameObject> m_partPrefabTable;
         private IReadOnlyDictionary<CourseItem, GameObject> m_itemPrefabTable;
@@ -92,43 +73,9 @@ namespace RAF.Course
 
         public CourseConstractor Generate(int verts, float radius)
         {
-            Course course = new Course(verts);
+            Course course = new Course(verts, radius);
 
-            //頂点の座標
-            Vector2[] vertexs = new Vector2[verts];
-            //各辺の中心の座標（辺オブジェクトの生成位置）
-            Vector2[] edgeCenterPoints = new Vector2[verts];
-            //各辺の角度
-            Angle[] edgeAngles = new Angle[verts];
-            //1つの内角の角度
-            Angle outerAngle = GetOuterAngle(verts);
-            //現在のオブジェクトの角度
-            Angle direction = Angle.Zero;
-            //1辺の長さ
-            float edgeLength = GetOneSideLength(verts, radius);
-            float halfLengeh = edgeLength / 2;
 
-            Vector2 point = Vector2.zero;
-            for (int i = 0; i < verts; i++)
-            {
-                //オブジェクトを配置する座標を記録
-                edgeCenterPoints[i] = point;
-                //オブジェクトの角度を記録
-                edgeAngles[i] = direction;
-                //配置座標から次のパーツの始点を求める（頂点）
-                point += halfLengeh * direction.Point;
-                //頂点座標を記録
-                vertexs[i] = point;
-                //次のオブジェクトの角度を求める
-                direction += outerAngle;
-                //次のオブジェクトの中心座標を求める
-                point += halfLengeh * direction.Point;
-            }
-
-            //すべての頂点ベクトルから重心の座標を求める
-            Vector2 centerOfGravity = vertexs.Aggregate((sum, v) => sum + v) / verts;
-            //重心分だけずらして回転の中心座標を合わせる
-            edgeCenterPoints = edgeCenterPoints.Select(pt => pt - centerOfGravity).ToArray();
 
 
             InstantiateInfo[] instantiateInfos = new InstantiateInfo[verts];
@@ -139,15 +86,24 @@ namespace RAF.Course
                     instantiateInfos[i] = new InstantiateInfo()
                     {
                         Prefab = m_partPrefabTable[course.PartMap[i]],
-                        Position = edgeCenterPoints[i],
-                        Rotation = Quaternion.Euler(0, 0, edgeAngles[i].TotalDegree),
+                        Position = course.EdgeCenterPoints[i],
+                        Rotation = Quaternion.Euler(0, 0, course.EdgeAngles[i].TotalDegree),
                         Parent = m_parentObject,
-                        Scale = new Vector3(edgeLength, 0.1f)
+                        Scale = new Vector3(course.EdgeLength, 0.1f)
                     };
                 }
             }
 
-            return new CourseConstractor(instantiateInfos, _container);
+            InstantiateInfo[] instantiateInfo_item = course.ItemPoss.Select(pair => new InstantiateInfo()
+            {
+                Position = pair.Item1,
+                Prefab = m_goldItemPrefab,
+                Rotation = Quaternion.identity,
+                Scale = new Vector3(0.5f,0.5f),
+                Parent = m_parentObject
+            }).ToArray();
+
+            return new CourseConstractor(instantiateInfos, instantiateInfo_item, _container);
         }
 
         [Button]
