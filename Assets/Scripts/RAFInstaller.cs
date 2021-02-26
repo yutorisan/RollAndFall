@@ -15,5 +15,9 @@ public class RAFInstaller : MonoInstaller
                  .To<SubCameraFollower>()
                  .FromComponentInHierarchy()
                  .AsCached();
+        Container.Bind<IObservableGetItem>()
+                 .To<ItemCollisionDetector>()
+                 .FromComponentInHierarchy()
+                 .AsCached();
     }
 }

@@ -9,6 +9,11 @@ namespace RAF.Item
     /// </summary>
     public class TimeExtendItem : ItemBase
     {
+        public override void Use()
+        {
+            throw new System.NotImplementedException();
+        }
+
         // Start is called before the first frame update
         void Start()
         {

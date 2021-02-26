@@ -6,14 +6,10 @@ namespace RAF.Item
 {
     public interface IItem
     {
-
+        void Use();
     }
     public abstract class ItemBase : MonoBehaviour, IItem
     {
-        // Start is called before the first frame update
-        void Start()
-        {
-
-        }
+        public abstract void Use();
     }
 }
