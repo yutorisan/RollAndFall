@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using UnityUtility.Classes;
 
 namespace RAF.Course
 {
-    public class Course 
+    public class Course
     {
         private static readonly int SmallWallCount = 4;
         private static readonly int GoldCount = 20;

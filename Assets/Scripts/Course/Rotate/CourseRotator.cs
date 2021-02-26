@@ -8,18 +8,23 @@ namespace RAF.Course.Rotate
 {
     public class CourseRotator : MonoBehaviour
     {
-        private Rigidbody2D m_rigidbody;
-        private float m_rotation;
+        [SerializeField]
+        private float m_rotateAmount;
+
+        private float m_rotate;
+        private Rigidbody2D m_rigidbody2d;
 
         // Start is called before the first frame update
         void Start()
         {
-            m_rigidbody = GetComponent<Rigidbody2D>();
+            m_rigidbody2d = GetComponent<Rigidbody2D>();
 
             GameCommandFormatter.Instance.GameCommandInputted(GameCommand.RotateLeft)
-                                .Subscribe(_ => transform.Rotate(new Vector3(0, 0, .1f)));
+                                .Subscribe(_ => m_rigidbody2d.MoveRotation(m_rotate += m_rotateAmount));
+                                //.Subscribe(_ => transform.Rotate(new Vector3(0, 0, m_rotateAmount)));
             GameCommandFormatter.Instance.GameCommandInputted(GameCommand.RotateRigth)
-                                .Subscribe(_ => transform.Rotate(new Vector3(0, 0, -.1f)));
+                                .Subscribe(_ => m_rigidbody2d.MoveRotation(m_rotate -= m_rotateAmount));
+                                //.Subscribe(_ => transform.Rotate(new Vector3(0, 0, -m_rotateAmount)));
         }
     }
 }

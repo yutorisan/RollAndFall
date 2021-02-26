@@ -16,8 +16,9 @@ namespace RAF.Course
 
         private void Start()
         {
-            this.OnTriggerEnter2DAsObservable()
+            this.OnTriggerExit2DAsObservable()
                 .Where(col => col.transform.tag == "Player")
+                .Take(1)
                 .Subscribe(_ => m_courseSwitcher.Switch());
         }
     }

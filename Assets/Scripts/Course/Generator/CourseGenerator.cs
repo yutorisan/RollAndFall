@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DG.Tweening;
 using Sirenix.OdinInspector;
 using UniRx;
 using UnityEngine;
@@ -17,12 +18,10 @@ namespace RAF.Course
         /// n角形のコースを生成する
         /// </summary>
         /// <param name="n"></param>
-        Course Generate(int n);
+        CourseConstractor Generate(int verts, float radius);
     }
     public class CourseGenerator : MonoBehaviour, ICourseGenerator
     {
-        //private static readonly float PartLength = 1f;
-        //private static readonly float HalfLength = .5f;
         [Inject]
         private DiContainer _container;
 
@@ -50,13 +49,6 @@ namespace RAF.Course
         [SerializeField]
         private int m_num;
 
-        //[SerializeField]
-        //private int m_bigWallCount;
-        //[SerializeField]
-        //private int m_smallWallCount;
-        //[SerializeField]
-        //private int m_goldCount;
-
         /// <summary>
         /// n角形の外角の大きさを取得する
         /// </summary>
@@ -68,7 +60,7 @@ namespace RAF.Course
         /// </summary>
         /// <param name="n"></param>
         /// <returns></returns>
-        private static Angle GetInnerAngle(int n) => Angle.FromDegree(180 * (n - 2) / n);
+        private static Angle GetInnerAngle(int n) => Angle.FromDegree(180f * (n - 2) / n);
         /// <summary>
         /// 1辺の長さを取得する
         /// </summary>
@@ -96,37 +88,28 @@ namespace RAF.Course
                 {CourseItem.GoldItem, m_goldItemPrefab },
                 {CourseItem.TimeItem, m_timeItemPrefab }
             };
-
-            Generate(3);
-
-            //Observable.Interval(TimeSpan.FromSeconds(1))
-            //          .Skip(4)
-            //          .Take(80)
-            //          .Subscribe(n => Generate((int)n));
         }
 
-        [Button]
-        public Course Generate(int n)
+        public CourseConstractor Generate(int verts, float radius)
         {
-            Course course = new Course(n);
+            Course course = new Course(verts);
 
             //頂点の座標
-            Vector2[] vertexs = new Vector2[n];
+            Vector2[] vertexs = new Vector2[verts];
             //各辺の中心の座標（辺オブジェクトの生成位置）
-            Vector2[] edgeCenterPoints = new Vector2[n];
+            Vector2[] edgeCenterPoints = new Vector2[verts];
             //各辺の角度
-            Angle[] edgeAngles = new Angle[n];
+            Angle[] edgeAngles = new Angle[verts];
             //1つの内角の角度
-            Angle outerAngle = GetOuterAngle(n);
+            Angle outerAngle = GetOuterAngle(verts);
             //現在のオブジェクトの角度
             Angle direction = Angle.Zero;
             //1辺の長さ
-            float edgeLength = GetOneSideLength(n, n * 5);
+            float edgeLength = GetOneSideLength(verts, radius);
             float halfLengeh = edgeLength / 2;
 
-
             Vector2 point = Vector2.zero;
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < verts; i++)
             {
                 //オブジェクトを配置する座標を記録
                 edgeCenterPoints[i] = point;
@@ -143,28 +126,41 @@ namespace RAF.Course
             }
 
             //すべての頂点ベクトルから重心の座標を求める
-            Vector2 centerOfGravity = vertexs.Aggregate((sum, v) => sum + v) / n;
+            Vector2 centerOfGravity = vertexs.Aggregate((sum, v) => sum + v) / verts;
             //重心分だけずらして回転の中心座標を合わせる
             edgeCenterPoints = edgeCenterPoints.Select(pt => pt - centerOfGravity).ToArray();
 
-            for (int i = 0; i < n; i++)
+
+            InstantiateInfo[] instantiateInfos = new InstantiateInfo[verts];
+            for (int i = 0; i < verts; i++)
             {
-                if(m_partPrefabTable[course.PartMap[i]] != null)
-                    _container.InstantiatePrefab(m_partPrefabTable[course.PartMap[i]],
-                                edgeCenterPoints[i],
-                                Quaternion.Euler(0, 0, edgeAngles[i].TotalDegree),
-                                m_parentObject).transform.localScale = new Vector3(edgeLength, 0.1f);
-                if (m_itemPrefabTable[course.ItemMap[i]] != null)
-                    Instantiate(m_itemPrefabTable[course.ItemMap[i]],
-                                edgeCenterPoints[i] + m_itemHeight * (edgeAngles[i] + Angle.FromDegree(90)).Point,
-                                Quaternion.Euler(0, 0, edgeAngles[i].TotalDegree),
-                                m_parentObject);
+                if (m_partPrefabTable[course.PartMap[i]] != null)
+                {
+                    instantiateInfos[i] = new InstantiateInfo()
+                    {
+                        Prefab = m_partPrefabTable[course.PartMap[i]],
+                        Position = edgeCenterPoints[i],
+                        Rotation = Quaternion.Euler(0, 0, edgeAngles[i].TotalDegree),
+                        Parent = m_parentObject,
+                        Scale = new Vector3(edgeLength, 0.1f)
+                    };
+                }
             }
 
-
-            return course;
+            return new CourseConstractor(instantiateInfos, _container);
         }
 
+        [Button]
+        private void Constract(int verts) => Generate(verts, verts * 2).Constract();
 
+    }
+
+    public class InstantiateInfo
+    {
+        public GameObject Prefab { get; set; }
+        public Vector2 Position { get; set; }
+        public Quaternion Rotation { get; set; }
+        public Transform Parent { get; set; }
+        public Vector3 Scale { get; set; }
     }
 }
