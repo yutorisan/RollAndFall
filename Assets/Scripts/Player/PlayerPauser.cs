@@ -1,15 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using RAF.Time;
 using UnityEngine;
 
 namespace RAF.Player
 {
-    public interface IPlayerPauser
-    {
-        void Pause();
-        void Resume();
-    }
-    public class PlayerPauser : MonoBehaviour, IPlayerPauser
+    public class PlayerPauser : MonoBehaviour, ITimeInfluenced
     {
         private Rigidbody2D m_rd;
 

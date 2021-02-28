@@ -1,3 +1,4 @@
+using RAF;
 using RAF.Camera;
 using RAF.Player;
 using UnityEngine;
@@ -7,8 +8,8 @@ public class RAFInstaller : MonoInstaller
 {
     public override void InstallBindings()
     {
-        Container.Bind<IPlayerPauser>()
-                 .To<PlayerPauser>()
+        Container.Bind<ITimeOperator>()
+                 .To<TimeManager>()
                  .FromComponentInHierarchy()
                  .AsCached();
         Container.Bind<ISubCameraFollower>()

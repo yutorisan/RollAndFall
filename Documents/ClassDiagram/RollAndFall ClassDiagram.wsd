@@ -55,6 +55,10 @@ namespace Player{
     ItemCollisionDetector --> Item.IItem
 
     Item.ItemUtilizer --> IObservableGetItem
+
+    interface IPlayerPauser
+    class PlayerPauser
+    IPlayerPauser <|.. PlayerPauser
 }
 
 namespace Course{
@@ -70,13 +74,11 @@ namespace Course{
 
     '落下時を検知
     class FallDetector
-    interface IObservableFalled
-    IObservableFalled <|.. FallDetector
+    FallDetector --> ICourseSwitcher
 
-    interface IObservableCourseSwitched
+    interface ICourseSwitcher
     class CourseSwitcher
-    IObservableCourseSwitched <|.. CourseSwitcher
-    CourseSwitcher --> IObservableFalled
+    ICourseSwitcher <|.. CourseSwitcher
 
     'コース上のアイテムの状態を監視する
     interface IObservableCourseItemCompleted
@@ -92,13 +94,14 @@ namespace Course{
     interface ICourseGenerator{
         +Course Generate(int n);
     }
-    CourseManager --> ICourseGenerator
+    ' CourseManager --> ICourseGenerator
     CourseManager --> IObservableCourseItemCompleted
-    CourseManager --> IObservableCourseSwitched
 
     System.Score.IScoreAddable <-- CourseManager
 
     ICourseGenerator <|.. Course.Generate.CourseGenerator
+    CourseSwitcher --> ICourseGenerator
+    CourseSwitcher --> Player.IPlayerPauser
 
 }
 

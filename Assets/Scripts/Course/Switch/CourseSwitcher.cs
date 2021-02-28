@@ -19,7 +19,7 @@ namespace RAF.Course
         [Inject]
         private ICourseGenerator m_courseGenerator;
         [Inject]
-        private IPlayerPauser m_playerPauser;
+        private ITimeOperator m_timeOperator;
         [Inject]
         private ISubCameraFollower m_subCamFollower;
 
@@ -45,11 +45,11 @@ namespace RAF.Course
 
             print(n);
 
-            m_playerPauser.Pause();
+            m_timeOperator.Pause();
 
             await UniTask.WhenAll(disposable.Constract(), m_subCamFollower.ChangeRange(radius));
 
-            m_playerPauser.Resume();
+            m_timeOperator.Resume();
         }
     }
 }
