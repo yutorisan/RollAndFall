@@ -23,14 +23,14 @@ namespace RAF.Course
         [Inject]
         private ISubCameraFollower m_subCamFollower;
 
-        private int n = 3;
+        private int n = 4;
         private float radiusWeight = 1;
 
         private CourseConstractor disposable;
 
-        private async void Start()
+        private void Start()
         {
-            await Switch();
+            Switch().Forget();
         }
 
         public async UniTask Switch()
@@ -39,11 +39,9 @@ namespace RAF.Course
             ++n;
             int verts = n;
             //if (n % 4 == 0) radiusWeight += .5f;
-            float radius = n * 2 * radiusWeight;
+            float radius = n * 1.5f;
 
             disposable = m_courseGenerator.Generate(verts, radius);
-
-            print(n);
 
             m_timeOperator.Pause();
 

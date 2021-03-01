@@ -1,21 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
+using RAF.Inventory;
 using UnityEngine;
+using Zenject;
 
 namespace RAF.Item
 {
     public class GoldItem : ItemBase
     {
+        [Inject]
+        private ICoinInventoryAddable coinInventoryAddable;
+
         public override void Use()
         {
-            print("ゴールドを獲得！");
+            coinInventoryAddable.Add();
         }
-
-        // Start is called before the first frame update
-        void Start()
-        {
-
-        }
-
     }
 }

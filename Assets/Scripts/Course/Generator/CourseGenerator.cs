@@ -75,9 +75,6 @@ namespace RAF.Course
         {
             Course course = new Course(verts, radius);
 
-
-
-
             InstantiateInfo[] instantiateInfos = new InstantiateInfo[verts];
             for (int i = 0; i < verts; i++)
             {
@@ -97,9 +94,9 @@ namespace RAF.Course
             InstantiateInfo[] instantiateInfo_item = course.ItemPoss.Select(pair => new InstantiateInfo()
             {
                 Position = pair.Item1,
-                Prefab = m_goldItemPrefab,
+                Prefab = pair.Item2 == CourseItem.GoldItem ? m_goldItemPrefab : m_timeItemPrefab,
                 Rotation = Quaternion.identity,
-                Scale = new Vector3(0.5f,0.5f),
+                Scale = pair.Item2 == CourseItem.GoldItem ? new Vector3(0.5f,0.5f) : new Vector3(2f, 2f),
                 Parent = m_parentObject
             }).ToArray();
 

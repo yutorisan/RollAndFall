@@ -43,7 +43,7 @@ namespace RAF.Course
                                    {
                                        var item = m_itemInfos.Select(info =>
                                        {
-                                           var go = Object.Instantiate(info.Prefab, info.Position, info.Rotation, info.Parent);
+                                           var go = container.InstantiatePrefab(info.Prefab, info.Position, info.Rotation, info.Parent);
                                            go.transform.localScale = info.Scale;
                                            return go;
                                        });

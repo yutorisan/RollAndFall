@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using RAF.Inventory;
 using UnityEngine;
+using Zenject;
 
 namespace RAF.Item
 {
@@ -9,9 +11,12 @@ namespace RAF.Item
     /// </summary>
     public class TimeExtendItem : ItemBase
     {
+        [Inject]
+        private ITimeInventoryAddable timeInventoryAddable;
+
         public override void Use()
         {
-            throw new System.NotImplementedException();
+            timeInventoryAddable.Add(5);
         }
 
         // Start is called before the first frame update

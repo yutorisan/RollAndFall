@@ -13,7 +13,7 @@ namespace RAF.Course
     {
         private static readonly int SmallWallCount = 4;
         private static readonly int GoldCount = 20;
-        private static readonly float ItemInterval = 3f;
+        private static readonly float ItemInterval = 1.5f;
         private static readonly float ItemHeight = .2f;
 
         /// <summary>
@@ -104,12 +104,19 @@ namespace RAF.Course
             float[] putPoints = Enumerable.Range(0, puttableCnt)
                                           .Select(n => n * ItemInterval - edgeLength / 2).ToArray();
 
-            ItemPoss = edgeCenterPoints
+            var items = edgeCenterPoints
                                        .Select((v, i) => putPoints.Select(p => v + p * edgeAngles[i].Point))
                                        .SelectMany((v, i) => v.Select(a => ((a + ItemHeight * (edgeAngles[i] + Angle.FromDegree(90)).Point), PartMap[i] == CoursePart.Floor)))
                                        .Where(p => p.Item2)
                                        .Select(v => (v.Item1 - centerOfGravity, CourseItem.GoldItem))
                                        .ToList();
+
+            //if(UnityEngine.Random.value < .3)
+            //{
+                items[UnityEngine.Random.Range(0, items.Count - 1)] = (items[UnityEngine.Random.Range(0, items.Count - 1)].Item1, CourseItem.TimeItem);
+            //}
+
+            ItemPoss = items;
         }
 
         /// <summary>

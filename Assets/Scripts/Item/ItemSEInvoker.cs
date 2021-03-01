@@ -12,14 +12,12 @@ namespace RAF.Item
         [Inject]
         private IObservableGetItem observableGetItem;
 
-        private AudioSource audioSource;
-
         // Start is called before the first frame update
         void Start()
         {
-            audioSource = GetComponent<AudioSource>();
+            AudioSource audioSource = GetComponent<AudioSource>();
             observableGetItem.GettedItem
-                             .Subscribe(item => audioSource.Play());
+                             .Subscribe(item => item.Sound(audioSource));
         }
     }
 }
