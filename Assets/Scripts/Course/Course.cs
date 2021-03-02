@@ -111,10 +111,10 @@ namespace RAF.Course
                                        .Select(v => (v.Item1 - centerOfGravity, CourseItem.GoldItem))
                                        .ToList();
 
-            //if(UnityEngine.Random.value < .3)
-            //{
+            if (UnityEngine.Random.value < .2)
+            {
                 items[UnityEngine.Random.Range(0, items.Count - 1)] = (items[UnityEngine.Random.Range(0, items.Count - 1)].Item1, CourseItem.TimeItem);
-            //}
+            }
 
             ItemPoss = items;
         }

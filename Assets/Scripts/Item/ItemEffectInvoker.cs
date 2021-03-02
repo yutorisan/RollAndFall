@@ -7,8 +7,8 @@ namespace RAF.Item
 {
     public class ItemEffectInvoker : MonoBehaviour
     {
-        [Inject]
-        IEffectPlay effectPlay;
+        //[Inject]
+        //IEffectPlay effectPlay;
 
         // Start is called before the first frame update
         void Start()

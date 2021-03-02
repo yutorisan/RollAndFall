@@ -33,11 +33,13 @@ namespace RAF.Course.Rotate
 
             GameCommandFormatter.Instance.GameCommandInputted(GameCommand.RotateLeft)
                                 .Where(_ => m_timeFlowing)
-                                .Subscribe(_ => m_rigidbody2d.MoveRotation(m_rotate += m_rotateAmount));
+                                .Subscribe(_ => m_rigidbody2d.MoveRotation(m_rotate += m_rotateAmount))
+                                .AddTo(this);
                                 //.Subscribe(_ => transform.Rotate(new Vector3(0, 0, m_rotateAmount)));
             GameCommandFormatter.Instance.GameCommandInputted(GameCommand.RotateRigth)
                                 .Where(_ => m_timeFlowing)
-                                .Subscribe(_ => m_rigidbody2d.MoveRotation(m_rotate -= m_rotateAmount));
+                                .Subscribe(_ => m_rigidbody2d.MoveRotation(m_rotate -= m_rotateAmount))
+                                .AddTo(this);
                                 //.Subscribe(_ => transform.Rotate(new Vector3(0, 0, -m_rotateAmount)));
         }
     }
